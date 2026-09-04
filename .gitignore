@@ -1,0 +1,11 @@
+# 二进制
+*.exe
+*.out
+bin/
+
+# IDE
+.idea/
+.vscode/
+
+# 环境
+*.local.yaml
