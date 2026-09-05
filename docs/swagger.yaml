@@ -1,9 +1,177 @@
 basePath: /api/v1/general-agent
+definitions:
+  response.Response:
+    properties:
+      code:
+        type: integer
+      data: {}
+      msg:
+        type: string
+    type: object
+  user.CreateUserReq:
+    properties:
+      name:
+        type: string
+      password:
+        type: string
+      role_id:
+        type: integer
+      username:
+        type: string
+    required:
+    - name
+    - password
+    - username
+    type: object
+  user.PageResp:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/user.UserResp'
+        type: array
+      total:
+        type: integer
+    type: object
+  user.UpdateUserReq:
+    properties:
+      name:
+        type: string
+      role_id:
+        type: integer
+    type: object
+  user.UserResp:
+    properties:
+      create_time:
+        type: integer
+      id:
+        type: string
+      name:
+        type: string
+      role_id:
+        type: integer
+      status:
+        type: integer
+      username:
+        description: 用户名称
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact: {}
   description: 这是一个通用Agent智能体.
   title: General Agent
   version: "1.0"
-paths: {}
+paths:
+  /user:
+    get:
+      description: 分页查询用户列表
+      parameters:
+      - description: 页码
+        in: query
+        name: pageNum
+        type: integer
+      - description: 每页大小
+        in: query
+        name: pageSize
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/user.PageResp'
+              type: object
+      summary: 用户列表
+      tags:
+      - 用户
+    post:
+      description: 创建新用户
+      parameters:
+      - description: 创建请求
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/user.CreateUserReq'
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/user.UserResp'
+              type: object
+      summary: 创建用户
+      tags:
+      - 用户
+  /user/{id}:
+    delete:
+      description: 根据ID删除用户
+      parameters:
+      - description: 用户ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 删除用户
+      tags:
+      - 用户
+    get:
+      description: 根据ID查询单个用户
+      parameters:
+      - description: 用户ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/user.UserResp'
+              type: object
+      summary: 获取用户信息
+      tags:
+      - 用户
+    put:
+      description: 根据ID更新用户信息
+      parameters:
+      - description: 用户ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 更新请求
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/user.UpdateUserReq'
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/user.UserResp'
+              type: object
+      summary: 更新用户
+      tags:
+      - 用户
 swagger: "2.0"

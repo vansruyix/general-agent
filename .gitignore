@@ -9,3 +9,6 @@ bin/
 
 # 环境
 *.local.yaml
+
+.superpowers
+.claude
