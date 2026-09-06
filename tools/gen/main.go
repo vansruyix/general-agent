@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"log"
 
-	"general-agent/internal/config"
+	"general-agent/config"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gen"
@@ -21,7 +21,7 @@ var targets = map[string]string{
 }
 
 func main() {
-	cfg, err := config.New()
+	cfg, err := config.NewGlobalConfig()
 	if err != nil {
 		log.Fatalf("load config: %v", err)
 	}

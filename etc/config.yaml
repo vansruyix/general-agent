@@ -1,0 +1,22 @@
+# 应用公共配置（所有环境共享）
+app:
+  env: "dev"
+
+http:
+  host: 0.0.0.0
+  port: 8080
+  api-prefix: "/api/v1/general-agent"
+
+log:
+  level: "info"
+  encoding: "json"
+
+mysql:
+  host: "127.0.0.1"
+  port: 3306
+  username: "root"
+  password: ""
+  database: "general_agent"
+  maxIdleConns: 10
+  maxOpenConns: 100
+  connMaxLifetime: 3600

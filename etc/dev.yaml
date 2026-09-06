@@ -1,0 +1,10 @@
+log:
+  level: "debug"
+  encoding: "json"
+
+mysql:
+  host: "192.168.106.128"
+  port: 13306
+  username: "root"
+  password: "123456"
+  database: "cs_plus"

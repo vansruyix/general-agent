@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"general-agent/internal/config"
+	"general-agent/config"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -44,7 +44,7 @@ func NewEngine(cfg *config.Config, log *zap.Logger) (*gin.Engine, *gin.RouterGro
 		engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
 
-	rg := engine.Group(cfg.HTTP.BasePath)
+	rg := engine.Group(cfg.HTTP.APIPrefix)
 	return engine, rg
 }
 
@@ -53,11 +53,11 @@ func NewEngine(cfg *config.Config, log *zap.Logger) (*gin.Engine, *gin.RouterGro
 var Module = fx.Module("server",
 	fx.Provide(NewEngine),
 	fx.Invoke(func(lc fx.Lifecycle, cfg *config.Config, engine *gin.Engine, log *zap.Logger) {
-		srv := &http.Server{Addr: cfg.HTTP.Addr, Handler: engine}
+		srv := &http.Server{Addr: fmt.Sprintf("%s:%d", cfg.HTTP.Host, cfg.HTTP.Port), Handler: engine}
 		lc.Append(fx.Hook{
 			OnStart: func(ctx context.Context) error {
 				go func() {
-					log.Sugar().Infof("server start success，address %s", cfg.HTTP.Addr)
+					log.Sugar().Infof("server start success，address %s", fmt.Sprintf("%s:%d", cfg.HTTP.Host, cfg.HTTP.Port))
 					if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 						log.Fatal("server start failed", zap.Error(err))
 					}

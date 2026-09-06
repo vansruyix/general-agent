@@ -4,6 +4,7 @@ package server
 
 import (
 	"general-agent/internal/errs"
+	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -49,9 +50,14 @@ func CORS() gin.HandlerFunc {
 		ctx.Header("Access-Control-Allow-Origin", "*")
 		ctx.Header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS,PATCH")
 		ctx.Header("Access-Control-Allow-Headers", "Origin,Content-Type,Accept,Authorization,X-Request-ID,X-Requested-With")
+		ctx.Header(
+			"Access-Control-Expose-Headers",
+			"Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Content-Type",
+		)
 		ctx.Header("Access-Control-Max-Age", "86400")
+		ctx.Header("Access-Control-Allow-Credentials", "true")
 
-		if ctx.Request.Method == "OPTIONS" {
+		if ctx.Request.Method == http.MethodOptions {
 			ctx.AbortWithStatus(204)
 			return
 		}

@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"time"
 
-	"general-agent/internal/config"
+	"general-agent/config"
 
 	"go.uber.org/fx"
 	"go.uber.org/zap"

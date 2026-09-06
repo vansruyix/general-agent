@@ -4,11 +4,11 @@
 package main
 
 import (
-	"general-agent/app/user"
-	"general-agent/internal/config"
-	"general-agent/internal/database"
-	"general-agent/internal/logger"
-	"general-agent/internal/server"
+	"context"
+	"general-agent/app"
+	"general-agent/framework"
+	"general-agent/framework/http"
+	"general-agent/framework/scheduler"
 
 	_ "general-agent/docs" // swagger docs
 
@@ -21,11 +21,45 @@ import (
 // @host            localhost:8080
 // @BasePath        /api/v1/general-agent
 func main() {
-	fx.New(
-		config.Module,
-		logger.Module,
-		database.Module,
-		server.Module,
-		user.Module,
-	).Run()
+	App := fx.New(
+		// config.Module,
+		// logger.Module,
+		// database.Module,
+		// server.Module,
+		app.Module,
+		framework.Module,
+		fx.Invoke(start),
+		fx.Invoke(task),
+	)
+	App.Run()
+}
+
+func start(lifecycle fx.Lifecycle, httpServer *http.HTTPServer) {
+	lifecycle.Append(
+		fx.Hook{
+			OnStart: func(ctx context.Context) error {
+				go httpServer.Serve(ctx)
+				return nil
+			},
+			OnStop: func(ctx context.Context) error {
+				go httpServer.Shutdown(ctx)
+				return nil
+			},
+		},
+	)
+}
+
+func task(lifecycle fx.Lifecycle, scheduler *scheduler.JobManager) {
+	lifecycle.Append(
+		fx.Hook{
+			OnStart: func(ctx context.Context) error {
+				go scheduler.Start()
+				return nil
+			},
+			OnStop: func(ctx context.Context) error {
+				scheduler.Stop()
+				return nil
+			},
+		},
+	)
 }
