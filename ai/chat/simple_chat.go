@@ -14,9 +14,9 @@ func NewSimpleChatModel(ctx context.Context) (*openai.ChatModel, error) {
 
 	cm, err := openai.NewChatModel(ctx, &openai.ChatModelConfig{
 		// 配置参数
-		APIKey:  "",
-		BaseURL: "",
-		Model:   "",
+		APIKey:  "5010006-cvvrdqyiyaczuudzwcsenqkexpfgxwic",
+		BaseURL: "https://aigateway.venusgroup.com.cn/ai/aliyun/openai",
+		Model:   "deepseek-v4-pro",
 	})
 	return cm, err
 }

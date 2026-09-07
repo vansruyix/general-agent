@@ -3,6 +3,7 @@ package agent
 import (
 	"context"
 	"general-agent/ai/chat"
+	"general-agent/ai/memory"
 
 	"github.com/cloudwego/eino-ext/adk/backend/local"
 	"github.com/cloudwego/eino/adk"
@@ -10,7 +11,7 @@ import (
 	"github.com/cloudwego/eino/schema"
 )
 
-func NewSimpleDeepAgent() {
+func NewSimpleDeepAgent(id, question string) {
 	ctx := context.Background()
 	cm, _ := chat.NewSimpleChatModel(ctx)
 	// 创建 LocalBackend
@@ -32,7 +33,14 @@ func NewSimpleDeepAgent() {
 		EnableStreaming: true,
 	})
 
-	history := make([]*schema.Message, 0, 16)
+	userMsg := &schema.Message{
+		Role:    schema.User,
+		Content: question,
+	}
+
+	userMemory := memory.GetMemory(id)
+	history := make([]*schema.Message, len(userMemory.Messages))
+	history = append(history, userMsg)
 	events := runner.Run(ctx, history)
 	AsyncIteraorHandler(events)
 
