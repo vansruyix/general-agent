@@ -2,8 +2,10 @@ package agent
 
 import (
 	"context"
+	"fmt"
 	"general-agent/ai/chat"
 	"general-agent/ai/memory"
+	"general-agent/ai/sse"
 
 	"github.com/cloudwego/eino-ext/adk/backend/local"
 	"github.com/cloudwego/eino/adk"
@@ -42,6 +44,37 @@ func NewSimpleDeepAgent(id, question string) {
 	history := make([]*schema.Message, len(userMemory.Messages))
 	history = append(history, userMsg)
 	events := runner.Run(ctx, history)
-	AsyncIteraorHandler(events)
+	var eventType sse.EventType
+	AsyncIteraorHandler(events, func(event sse.SSEvent) error {
+		if eventType == "" {
+			eventType = event.Type
+			switch event.Type {
+			case sse.EventThinking:
+				fmt.Printf("<think>%s", event.Data)
+			case sse.EventToolCall:
+				fmt.Printf("[Tool Caller: %s]", event.Data)
+			}
+			return nil
+		}
+		if event.Type == eventType {
+			fmt.Print(event.Data)
+		} else {
+			switch eventType {
+			case sse.EventThinking:
+				fmt.Printf("</think>")
+			}
+			fmt.Println()
+			eventType = event.Type
+			switch event.Type {
+			case sse.EventThinking:
+				fmt.Printf("<think>%s", event.Data)
+			case sse.EventToolCall:
+				fmt.Printf("[Tool Caller: %s]", event.Data)
+			case sse.EventToolResult:
+				fmt.Printf("[Tool Result: %s]", event.Data)
+			}
+		}
+		return nil
+	})
 
 }

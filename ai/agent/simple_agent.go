@@ -24,5 +24,5 @@ func SimpleAgent() {
 	})
 	history := make([]*schema.Message, 0, 16)
 	events := runner.Run(ctx, history)
-	AsyncIteraorHandler(events)
+	AsyncIteraorHandler(events, nil)
 }
