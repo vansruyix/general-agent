@@ -46,6 +46,9 @@ export const useChatStore = defineStore('chat', () => {
     const sessionId = sessionStore.currentSessionId
     if (!sessionId || !question.trim()) return
 
+    // 如果正在接收流式响应，先停止旧流
+    if (isStreaming.value) stopStreaming()
+
     error.value = null
 
     // 第一条消息：用问题作为会话标题
@@ -151,6 +154,12 @@ export const useChatStore = defineStore('chat', () => {
       abortController = null
     }
     isStreaming.value = false
+    // 将最后一条 assistant 消息从 streaming 置为 done，避免 UI 持续显示加载动画
+    const lastMsg = messages.value[messages.value.length - 1]
+    if (lastMsg && lastMsg.role === 'assistant' && lastMsg.status === 'streaming') {
+      lastMsg.status = 'done'
+      saveMessages()
+    }
   }
 
   /** 清空当前会话消息 */
