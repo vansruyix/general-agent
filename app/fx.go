@@ -1,6 +1,7 @@
 package app
 
 import (
+	"general-agent/app/ai/agent"
 	"general-agent/app/user"
 
 	"go.uber.org/fx"
@@ -8,4 +9,5 @@ import (
 
 var Module = fx.Module("app",
 	user.Module,
+	agent.Module,
 )

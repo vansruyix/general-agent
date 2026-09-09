@@ -67,9 +67,10 @@ func parseAssistantMessage(msg *schema.Message, consumer Consumer) error {
 		if err := consumer(SSEvent{
 			Type: EventToolCall,
 			Data: tc.Function.Arguments,
-			Meta: map[string]any{
-				"tool_name": tc.Function.Name,
-				"call_id":   tc.ID,
+			Meta: map[MetaKey]any{
+				ToolName:  tc.Function.Name,
+				CallId:    tc.ID,
+				ToolParam: tc.Function.Arguments,
 			},
 		}); err != nil {
 			return err
@@ -84,9 +85,10 @@ func parseToolMessage(msg *schema.Message, consumer Consumer) error {
 	return consumer(SSEvent{
 		Type: EventToolResult,
 		Data: msg.Content,
-		Meta: map[string]any{
-			"call_id":   msg.ToolCallID,
-			"tool_name": msg.ToolName,
+		Meta: map[MetaKey]any{
+			CallId:    msg.ToolCallID,
+			ToolName:  msg.ToolName,
+			ToolParam: msg.Content,
 		},
 	})
 }
@@ -208,18 +210,20 @@ func contentBlockToEvent(block *schema.ContentBlock) (SSEvent, error) {
 		event := SSEvent{Type: EventToolCall}
 		if block.FunctionToolCall != nil {
 			event.Data = block.FunctionToolCall.Arguments
-			event.Meta = map[string]any{
-				"tool_name": block.FunctionToolCall.Name,
-				"call_id":   block.FunctionToolCall.CallID,
+			event.Meta = map[MetaKey]any{
+				ToolName:  block.FunctionToolCall.Name,
+				CallId:    block.FunctionToolCall.CallID,
+				ToolParam: block.FunctionToolCall.Arguments,
 			}
 		}
 		return event, nil
 	case schema.ContentBlockTypeFunctionToolResult:
 		event := SSEvent{Type: EventToolResult}
 		if block.FunctionToolResult != nil {
-			event.Meta = map[string]any{
-				"tool_name": block.FunctionToolResult.Name,
-				"call_id":   block.FunctionToolResult.CallID,
+			event.Meta = map[MetaKey]any{
+				ToolName:  block.FunctionToolCall.Name,
+				CallId:    block.FunctionToolCall.CallID,
+				ToolParam: block.FunctionToolCall.Arguments,
 			}
 		}
 		return event, nil

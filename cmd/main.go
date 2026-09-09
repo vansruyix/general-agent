@@ -5,6 +5,7 @@ package main
 
 import (
 	"context"
+	"general-agent/ai"
 	"general-agent/app"
 	"general-agent/framework"
 	"general-agent/framework/http"
@@ -26,6 +27,7 @@ func main() {
 		// logger.Module,
 		// database.Module,
 		// server.Module,
+		ai.Module,
 		app.Module,
 		framework.Module,
 		fx.Invoke(start),

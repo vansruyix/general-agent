@@ -38,6 +38,41 @@ func ConsoleConsumer() sse.Consumer {
 	}
 }
 
+func ConsoleFmtConsumer(eventType sse.EventType) sse.Consumer {
+	return func(event sse.SSEvent) error {
+		if eventType == "" {
+			eventType = event.Type
+			switch event.Type {
+			case sse.EventThinking:
+				fmt.Printf("<think>%s", event.Data)
+			case sse.EventToolCall:
+				fmt.Printf("[Tool Caller, name: %s, param: %s]", event.Meta[sse.ToolName], event.Meta[sse.ToolParam])
+			}
+			return nil
+		}
+		if event.Type == eventType {
+			fmt.Print(event.Data)
+		} else {
+			switch eventType {
+			case sse.EventThinking:
+				fmt.Printf("</think>")
+			}
+			fmt.Println()
+			eventType = event.Type
+			switch event.Type {
+			case sse.EventThinking:
+				fmt.Printf("<think>%s", event.Data)
+			case sse.EventToolCall:
+				fmt.Printf("[Tool Caller, name: %s, param: %s]\n", event.Meta[sse.ToolName], event.Meta[sse.ToolParam])
+			case sse.EventToolResult:
+				fmt.Println("[Tool Result]:")
+				fmt.Println(event.Data)
+			}
+		}
+		return nil
+	}
+}
+
 // StreamOutput 处理 TypedMessageVariant 并通过 consumer 消费。
 // 返回完整聚合后的消息，供对话历史缓存使用。
 func StreamOutput[M adk.MessageType](mv *adk.TypedMessageVariant[M], consumer sse.Consumer) (M, error) {
@@ -49,13 +84,15 @@ func MessageOutput(msg *schema.Message, consumer sse.Consumer) error {
 	return sse.ParseMessage(msg, consumer)
 }
 
-// AsyncIteraorHandler 遍历 agent 事件流，通过 consumer 消费每个事件。
+// MessageHandler 遍历 agent 事件流，通过 consumer 消费每个事件，
+// 返回最后一个 Assistant 消息，供对话历史缓存使用。
 // 若 consumer 为 nil，默认使用 ConsoleConsumer 输出到控制台。
-func AsyncIteraorHandler[M adk.MessageType](events *adk.AsyncIterator[*adk.TypedAgentEvent[M]], consumer sse.Consumer) {
+func MessageHandler[M adk.MessageType](events *adk.AsyncIterator[*adk.TypedAgentEvent[M]], consumer sse.Consumer) M {
 	if consumer == nil {
 		consumer = ConsoleConsumer()
 	}
 
+	var lastMsg M
 	for {
 		event, ok := events.Next()
 		if !ok {
@@ -69,7 +106,7 @@ func AsyncIteraorHandler[M adk.MessageType](events *adk.AsyncIterator[*adk.Typed
 			})
 			continue
 		}
-		// 处理消息输出事件（流式或非流式）
+		// 处理消息输出事件（流式或非流式），逐条消费但不提前返回
 		if event.Output != nil && event.Output.MessageOutput != nil {
 			msg, err := sse.HandleMessageVariant(event.Output.MessageOutput, consumer)
 			if err != nil {
@@ -79,7 +116,9 @@ func AsyncIteraorHandler[M adk.MessageType](events *adk.AsyncIterator[*adk.Typed
 				})
 				continue
 			}
-			_ = msg // 调用方可使用返回的完整消息进行对话历史缓存
+			lastMsg = msg // 记录最后一条消息，循环结束后返回
 		}
 	}
+	// 遍历完所有事件后才返回最后一条消息
+	return lastMsg
 }

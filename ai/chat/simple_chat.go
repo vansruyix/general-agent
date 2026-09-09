@@ -11,12 +11,13 @@ import (
 )
 
 func NewSimpleChatModel(ctx context.Context) (*openai.ChatModel, error) {
-
+	temp := float32(0.55)
 	cm, err := openai.NewChatModel(ctx, &openai.ChatModelConfig{
 		// 配置参数
-		APIKey:  "5010006-cvvrdqyiyaczuudzwcsenqkexpfgxwic",
-		BaseURL: "https://aigateway.venusgroup.com.cn/ai/aliyun/openai",
-		Model:   "deepseek-v4-pro",
+		APIKey:      "5010006-cvvrdqyiyaczuudzwcsenqkexpfgxwic",
+		BaseURL:     "https://aigateway.venusgroup.com.cn/ai/aliyun/openai",
+		Model:       "deepseek-v4-pro",
+		Temperature: &temp,
 	})
 	return cm, err
 }
