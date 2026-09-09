@@ -30,8 +30,8 @@ export const useChatStore = defineStore('chat', () => {
     }
   }
 
-  /** 持久化当前会话消息到 localStorage */
-  function saveMessages() {
+  /** 持久化当前会话消息到 localStorage（内部实现） */
+  function persistToStorage() {
     const sessionId = sessionStore.currentSessionId
     if (!sessionId) return
     try {
@@ -39,6 +39,26 @@ export const useChatStore = defineStore('chat', () => {
     } catch (e) {
       console.warn('保存消息失败:', e)
     }
+  }
+
+  let saveTimer: ReturnType<typeof setTimeout> | null = null
+
+  /** 防抖保存：高频调用时最多 500ms 写一次，避免 SSE 流式场景下的频繁 I/O */
+  function saveMessages() {
+    if (saveTimer !== null) return
+    saveTimer = setTimeout(() => {
+      saveTimer = null
+      persistToStorage()
+    }, 500)
+  }
+
+  /** 立即落盘（取消防抖），在 done / error 等关键节点调用 */
+  function flushSave() {
+    if (saveTimer !== null) {
+      clearTimeout(saveTimer)
+      saveTimer = null
+    }
+    persistToStorage()
   }
 
   /** 发送消息并启动 SSE 流式接收 */
@@ -91,7 +111,7 @@ export const useChatStore = defineStore('chat', () => {
         aiMsg.content = `请求失败: ${err.message}`
         error.value = err.message
         isStreaming.value = false
-        saveMessages()
+        flushSave()
       },
       // onDone: 标记完成
       () => {
@@ -100,7 +120,7 @@ export const useChatStore = defineStore('chat', () => {
         }
         isStreaming.value = false
         abortController = null
-        saveMessages()
+        flushSave()
       }
     )
   }

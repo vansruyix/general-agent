@@ -4,7 +4,7 @@
       <Sidebar
         :sessions="sessionStore.sessions"
         :currentSessionId="sessionStore.currentSessionId"
-        @new="handleNew"
+        @create="handleNew"
         @select="handleSelect"
         @delete="handleDelete"
       />

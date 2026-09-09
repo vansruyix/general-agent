@@ -7,7 +7,7 @@
       type="primary"
       class="new-session-btn"
       :icon="Plus"
-      @click="$emit('new')"
+      @click="$emit('create')"
     >新会话</el-button>
     <SessionList
       :sessions="sessions"
@@ -29,7 +29,7 @@ defineProps<{
 }>()
 
 defineEmits<{
-  new: []
+  create: []
   select: [id: string]
   delete: [id: string]
 }>()

@@ -1,4 +1,4 @@
-import type { IAdapter } from './index'
+import type { IAdapter } from './types'
 import type { SSEEvent } from '../types/chat'
 
 const API_BASE = '/api/v1/general-agent'
