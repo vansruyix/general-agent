@@ -1,11 +1,25 @@
 <template>
-  <div class="app">General Agent Frontend</div>
+  <AppLayout />
 </template>
 
 <script setup lang="ts">
+import AppLayout from './components/layout/AppLayout.vue'
 </script>
 
 <style>
-body { margin: 0; padding: 0; }
-.app { padding: 20px; font-family: sans-serif; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+#app {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
 </style>
