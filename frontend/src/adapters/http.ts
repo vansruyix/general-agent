@@ -40,8 +40,8 @@ export class HttpAdapter implements IAdapter {
           buffer = lines.pop() || ''
 
           for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              const jsonStr = line.slice(6).trim()
+            if (line.startsWith('data:')) {
+              const jsonStr = line.slice(5).trim()
               if (!jsonStr) continue
               try {
                 const event: SSEEvent = JSON.parse(jsonStr)

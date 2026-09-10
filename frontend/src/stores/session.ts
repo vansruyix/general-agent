@@ -16,6 +16,10 @@ export const useSessionStore = defineStore('session', () => {
       const raw = localStorage.getItem(STORAGE_KEY)
       if (raw) {
         sessions.value = JSON.parse(raw)
+        // 恢复上次的会话（取第一个即最近创建的会话）
+        if (sessions.value.length > 0) {
+          currentSessionId.value = sessions.value[0].id
+        }
       }
     } catch (e) {
       console.warn('加载会话列表失败:', e)

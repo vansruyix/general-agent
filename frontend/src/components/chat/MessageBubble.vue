@@ -7,22 +7,11 @@
     />
     <div class="body">
       <ThinkingBlock v-if="message.thinking" :content="message.thinking" />
-      <div
-        v-if="message.content"
-        class="content"
-        v-html="renderedContent"
-      ></div>
-      <div
-        v-if="message.status === 'streaming' && !message.content"
-        class="typing-indicator"
-      >
-        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-      </div>
       <div v-if="message.toolCalls?.length" class="tool-calls">
         <el-collapse>
           <el-collapse-item
             v-for="tc in message.toolCalls"
-            :key="tc.callId"
+            :key="tc.callId || tc.toolName"
             :title="`🔧 ${tc.toolName || '工具调用'}`"
           >
             <div class="tool-section">
@@ -35,6 +24,17 @@
             </div>
           </el-collapse-item>
         </el-collapse>
+      </div>
+      <div
+        v-if="message.content"
+        class="content"
+        v-html="renderedContent"
+      ></div>
+      <div
+        v-if="message.status === 'streaming' && !message.content"
+        class="typing-indicator"
+      >
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
       </div>
       <span v-if="message.status === 'error'" class="error-mark">⚠️</span>
     </div>

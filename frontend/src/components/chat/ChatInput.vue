@@ -8,7 +8,7 @@
       placeholder="输入消息... (Enter 发送, Shift+Enter 换行)"
       :disabled="isStreaming"
       resize="none"
-      @keydown.enter="handleEnter"
+      @keydown="handleKeydown"
     />
     <el-button
       v-if="!isStreaming"
@@ -41,10 +41,12 @@ const emit = defineEmits<{
 
 const input = ref('')
 
-function handleEnter(e: KeyboardEvent) {
-  if (e.shiftKey) return
-  e.preventDefault()
-  send()
+/** 监听键盘事件，Enter 发送（Shift+Enter 换行，输入法组合中不触发） */
+function handleKeydown(e: KeyboardEvent) {
+  if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
+    e.preventDefault()
+    send()
+  }
 }
 
 function send() {

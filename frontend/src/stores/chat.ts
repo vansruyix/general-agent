@@ -100,23 +100,29 @@ export const useChatStore = defineStore('chat', () => {
     saveMessages()
     sessionStore.incrementMessageCount(sessionId)
 
+    const aiMsgId = aiMsg.id
+
     abortController = adapter.chatStream(
       sessionId,
       question,
       // onEvent: 分发 SSE 事件到消息
-      (event: SSEEvent) => handleSSEEvent(aiMsg, event),
+      (event: SSEEvent) => handleSSEEvent(aiMsgId, event),
       // onError: 标记错误
       (err: Error) => {
-        aiMsg.status = 'error'
-        aiMsg.content = `请求失败: ${err.message}`
+        const reactiveMsg = messages.value.find(m => m.id === aiMsgId)
+        if (reactiveMsg) {
+          reactiveMsg.status = 'error'
+          reactiveMsg.content = `请求失败: ${err.message}`
+        }
         error.value = err.message
         isStreaming.value = false
         flushSave()
       },
       // onDone: 标记完成
       () => {
-        if (aiMsg.status === 'streaming') {
-          aiMsg.status = 'done'
+        const reactiveMsg = messages.value.find(m => m.id === aiMsgId)
+        if (reactiveMsg && reactiveMsg.status === 'streaming') {
+          reactiveMsg.status = 'done'
         }
         isStreaming.value = false
         abortController = null
@@ -126,7 +132,10 @@ export const useChatStore = defineStore('chat', () => {
   }
 
   /** 处理单条 SSE 事件，更新 AI 消息状态 */
-  function handleSSEEvent(msg: ChatMessage, event: SSEEvent) {
+  function handleSSEEvent(msgId: string, event: SSEEvent) {
+    // 通过 store 中的响应式数组查找消息，确保修改触发 Vue 响应式更新
+    const msg = messages.value.find(m => m.id === msgId)
+    if (!msg) return
     switch (event.type) {
       case 'thinking':
         msg.thinking = (msg.thinking || '') + event.data
@@ -136,12 +145,21 @@ export const useChatStore = defineStore('chat', () => {
         break
       case 'tool_call': {
         if (!msg.toolCalls) msg.toolCalls = []
-        const tc: ToolCall = {
-          callId: (event.meta?.call_id as string) || '',
-          toolName: (event.meta?.tool_name as string) || '未知工具',
-          params: event.data || '',
+        const callId = (event.meta?.call_id as string) || ''
+        const toolName = (event.meta?.tool_name as string) || ''
+        // 流式场景：同一个工具调用的参数分多个 chunk 到达
+        // 第一个 chunk 带 call_id，后续 chunk 无 call_id 但 toolName 相同
+        // callId 非空 → 新工具调用开始；callId 为空 → 合并到最后一个工具调用
+        if (callId) {
+          msg.toolCalls.push({ callId, toolName, params: event.data || '' })
+        } else if (msg.toolCalls.length > 0) {
+          // 合并到最近一个工具调用（流式续传的参数）
+          const last = msg.toolCalls[msg.toolCalls.length - 1]
+          last.params += (event.data || '')
+        } else {
+          // 孤立参数（无前置工具调用），仍然单独显示
+          msg.toolCalls.push({ callId: '', toolName: toolName || '未知工具', params: event.data || '' })
         }
-        msg.toolCalls.push(tc)
         break
       }
       case 'tool_result': {

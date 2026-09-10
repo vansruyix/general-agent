@@ -16,6 +16,7 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import Sidebar from './Sidebar.vue'
 import ChatArea from './ChatArea.vue'
 import { useSessionStore } from '../../stores/session'
@@ -23,6 +24,13 @@ import { useChatStore } from '../../stores/chat'
 
 const sessionStore = useSessionStore()
 const chatStore = useChatStore()
+
+/** 应用启动时如果没有会话，自动创建一个 */
+onMounted(() => {
+  if (sessionStore.sessions.length === 0) {
+    sessionStore.createSession()
+  }
+})
 
 function handleNew() {
   sessionStore.createSession()
