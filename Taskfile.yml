@@ -1,0 +1,101 @@
+# https://taskfile.dev
+# General Agent Wails v3 构建配置
+
+version: '3'
+
+vars:
+  APP_NAME: "GeneralAgent{{exeExt}}"
+  BINARY_DIR: "bin"
+
+tasks:
+
+  pre-build:
+    summary: 构建前准备
+
+  post-build:
+    summary: 构建后处理
+
+  install-frontend-deps:
+    summary: 安装前端依赖
+    dir: frontend
+    sources:
+      - package.json
+      - package-lock.json
+    generates:
+      - node_modules/*
+    preconditions:
+      - sh: '{{if eq OS "windows"}}cmd /c "npm version"{{else}}npm version{{end}}'
+        msg: "请先安装 Node.js: https://nodejs.org/"
+    cmds:
+      - npm install
+
+  build-frontend:
+    summary: 构建前端项目（Vite build → dist/）
+    dir: frontend
+    sources:
+      - src/**/*.{ts,vue,css}
+    generates:
+      - dist/**/*
+    deps:
+      - install-frontend-deps
+    cmds:
+      - npm run build
+
+  build:windows:
+    summary: 构建 Windows 桌面应用（.exe）
+    platforms:
+      - windows
+    cmds:
+      - task: pre-build
+      - task: build-frontend
+      - cmd: powershell -Command "if (-not (Test-Path '{{.BINARY_DIR}}')) { New-Item -ItemType Directory -Path '{{.BINARY_DIR}}' }"
+      - go build -o {{.BINARY_DIR}}/{{.APP_NAME}} ./cmd/wails/
+      - task: post-build
+
+  build:linux:
+    summary: 构建 Linux 桌面应用
+    platforms:
+      - linux
+    cmds:
+      - task: pre-build
+      - task: build-frontend
+      - mkdir -p {{.BINARY_DIR}}
+      - go build -o {{.BINARY_DIR}}/{{.APP_NAME}} ./cmd/wails/
+      - task: post-build
+
+  build:darwin:
+    summary: 构建 macOS 桌面应用
+    platforms:
+      - darwin
+    cmds:
+      - task: pre-build
+      - task: build-frontend
+      - mkdir -p {{.BINARY_DIR}}
+      - CGO_CFLAGS="-mmacosx-version-min=10.13" CGO_LDFLAGS="-mmacosx-version-min=10.13" go build -o {{.BINARY_DIR}}/{{.APP_NAME}} ./cmd/wails/
+      - task: post-build
+
+  build:
+    summary: 构建当前平台的桌面应用
+    cmds:
+      - task: build:windows
+      - task: build:linux
+      - task: build:darwin
+
+  dev:
+    summary: 开发模式（需要先 npm run dev 启动 Vite）
+    watch: true
+    cmds:
+      - task: build:backend
+
+  build:backend:
+    summary: 仅构建 Go 后端（不构建前端，用于开发调试）
+    cmds:
+      - task: pre-build
+      - mkdir -p {{.BINARY_DIR}}
+      - go build -o {{.BINARY_DIR}}/{{.APP_NAME}} ./cmd/wails/
+      - task: post-build
+
+  clean:
+    summary: 清理构建产物
+    cmds:
+      - '{{if eq OS "windows"}}powershell -Command "Remove-Item -Recurse -Force -ErrorAction SilentlyContinue bin/"{{else}}rm -rf bin/{{end}}'
