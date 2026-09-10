@@ -60,7 +60,7 @@ const renderedContent = computed(() => renderMarkdown(props.message.content))
   display: flex;
   gap: 10px;
   padding: 8px 16px;
-  max-width: 85%;
+  max-width: 88%;
 }
 .message-bubble.user {
   flex-direction: row-reverse;
@@ -72,6 +72,7 @@ const renderedContent = computed(() => renderMarkdown(props.message.content))
 }
 .avatar {
   flex-shrink: 0;
+  margin-top: 2px;
 }
 .body {
   flex: 1;
@@ -79,61 +80,116 @@ const renderedContent = computed(() => renderMarkdown(props.message.content))
 }
 .content {
   font-size: 14px;
-  line-height: 1.7;
+  line-height: 1.75;
   word-break: break-word;
+  color: var(--ga-text-primary);
 }
-.content :deep(pre) {
-  background: var(--el-fill-color-light);
-  padding: 12px;
-  border-radius: 6px;
-  overflow-x: auto;
-}
-.content :deep(code) {
-  font-family: 'Consolas', 'Monaco', monospace;
-  font-size: 13px;
-}
-.content :deep(p) {
-  margin: 4px 0;
+.user .body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 }
 .user .content {
-  background: var(--el-color-primary-light-9);
+  background: var(--ga-bg-user-bubble);
   padding: 10px 14px;
-  border-radius: 12px 4px 12px 12px;
+  border-radius: var(--ga-radius-lg) 4px var(--ga-radius-lg) var(--ga-radius-lg);
+  max-width: max-content;
+}
+.content :deep(pre) {
+  background: var(--ga-bg-code);
+  padding: 12px 14px;
+  border-radius: var(--ga-radius-sm);
+  overflow-x: auto;
+  border: 1px solid var(--ga-border);
+  border-left: 3px solid var(--el-color-primary);
+  margin: 8px 0;
+  line-height: 1.55;
+}
+.content :deep(code) {
+  font-family: var(--ga-font-mono);
+  font-size: 13px;
+  color: #1a1a1a;
+}
+.content :deep(p) {
+  margin: 0;
+}
+.content :deep(p + p) {
+  margin-top: 8px;
+}
+.content :deep(ul), .content :deep(ol) {
+  padding-left: 20px;
+  margin: 4px 0;
+}
+.content :deep(li) {
+  margin: 2px 0;
 }
 .typing-indicator {
   display: flex;
   gap: 4px;
-  padding: 8px 0;
+  padding: 6px 0;
 }
 .dot {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
-  background: var(--el-text-color-secondary);
+  background: var(--ga-text-muted);
   animation: bounce 1.4s infinite ease-in-out both;
 }
 .dot:nth-child(1) { animation-delay: -0.32s; }
 .dot:nth-child(2) { animation-delay: -0.16s; }
 @keyframes bounce {
-  0%, 80%, 100% { transform: scale(0); }
+  0%, 80%, 100% { transform: scale(0.4); }
   40% { transform: scale(1); }
 }
 .tool-calls {
-  margin-top: 8px;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+.tool-calls :deep(.el-collapse) {
+  border: none;
+  --el-collapse-header-height: 32px;
+}
+.tool-calls :deep(.el-collapse-item) {
+  background: var(--ga-bg-code);
+  border: 1px solid var(--ga-border);
+  border-radius: var(--ga-radius-sm);
+  margin-bottom: 4px;
+  overflow: hidden;
+}
+.tool-calls :deep(.el-collapse-item__header) {
+  padding: 0 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ga-text-secondary);
+  border: none;
+  background: transparent;
+}
+.tool-calls :deep(.el-collapse-item__wrap) {
+  border: none;
+  background: transparent;
+}
+.tool-calls :deep(.el-collapse-item__content) {
+  padding: 0 10px 8px;
 }
 .tool-section {
-  margin-bottom: 8px;
+  margin-bottom: 4px;
+}
+.tool-section strong {
+  font-weight: 500;
+  color: var(--ga-text-secondary);
+  font-size: 12px;
 }
 .tool-section pre {
-  background: var(--el-fill-color);
-  padding: 8px;
+  background: #fff;
+  padding: 6px 8px;
   border-radius: 4px;
   font-size: 12px;
+  font-family: var(--ga-font-mono);
   overflow-x: auto;
   white-space: pre-wrap;
   word-break: break-all;
+  margin-top: 2px;
+  border: 1px solid var(--ga-border);
 }
-.error-mark {
-  color: var(--el-color-danger);
-}
+.error-mark { color: var(--el-color-danger); }
 </style>

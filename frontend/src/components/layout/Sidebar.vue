@@ -40,17 +40,19 @@ defineEmits<{
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: var(--el-bg-color-page);
-  border-right: 1px solid var(--el-border-color-light);
+  background: var(--ga-bg-sidebar);
+  border-right: 1px solid var(--ga-border);
 }
 .sidebar-header {
-  padding: 16px;
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--el-text-color-primary);
-  border-bottom: 1px solid var(--el-border-color-lighter);
+  padding: 20px 16px 12px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ga-text-primary);
+  letter-spacing: -0.01em;
 }
 .new-session-btn {
-  margin: 12px;
+  margin: 8px 12px 4px;
+  border-radius: var(--ga-radius);
+  font-weight: 500;
 }
 </style>

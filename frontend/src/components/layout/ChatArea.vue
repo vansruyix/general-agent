@@ -33,5 +33,6 @@ const chatStore = useChatStore()
 }
 .input-area {
   padding: 0;
+  background: var(--ga-bg-chat);
 }
 </style>

@@ -1,5 +1,9 @@
 <template>
   <div class="message-list" ref="listRef">
+    <div v-if="messages.length === 0" class="empty-state">
+      <p class="empty-title">General Agent</p>
+      <p class="empty-desc">输入消息开始对话</p>
+    </div>
     <TransitionGroup name="msg">
       <MessageBubble
         v-for="msg in messages"
@@ -7,11 +11,6 @@
         :message="msg"
       />
     </TransitionGroup>
-    <el-empty
-      v-if="messages.length === 0"
-      description="开始新的对话吧"
-      :image-size="80"
-    />
   </div>
 </template>
 
@@ -53,11 +52,53 @@ watch(
   display: flex;
   flex-direction: column;
 }
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  user-select: none;
+}
+.empty-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--ga-text-primary);
+  letter-spacing: -0.03em;
+}
+.empty-desc {
+  font-size: 14px;
+  color: var(--ga-text-muted);
+}
 .msg-enter-active {
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 .msg-enter-from {
   opacity: 0;
-  transform: translateY(10px);
+  transform: translateY(6px);
+}
+
+/* 自定义滚动条 — 细竖线，无箭头 */
+.message-list::-webkit-scrollbar {
+  width: 5px;
+}
+.message-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.message-list::-webkit-scrollbar-thumb {
+  background: #d1d3d6;
+  border-radius: 3px;
+}
+.message-list::-webkit-scrollbar-thumb:hover {
+  background: #b0b3b8;
+}
+.message-list::-webkit-scrollbar-button {
+  display: none;
+}
+/* Firefox */
+.message-list {
+  scrollbar-width: thin;
+  scrollbar-color: #d1d3d6 transparent;
 }
 </style>

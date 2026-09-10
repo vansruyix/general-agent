@@ -60,10 +60,12 @@ function handleDelete(id: string) {
 .sidebar-panel {
   height: 100vh;
   overflow: hidden;
+  border-right: 1px solid var(--ga-border);
 }
 .main-panel {
   padding: 0;
   height: 100vh;
   overflow: hidden;
+  background: var(--ga-bg-chat);
 }
 </style>

@@ -1,20 +1,22 @@
 import type { IAdapter } from './types'
 import type { SSEEvent } from '../types/chat'
+import { HttpAdapter } from './http'
 
 /**
- * Wails v3 适配器（占位实现）
- * 通过 Wails 的 Go 桥接调用后端，在 Wails 环境就绪前不做实际对接
+ * Wails v3 桌面适配器 — 浅集成模式
+ * 复用 HttpAdapter 通过 localhost HTTP 与内嵌后端通信，
+ * 与浏览器模式唯一区别是运行时检测标记 (window.__WAILS__)
  */
 export class WailsAdapter implements IAdapter {
+  private http: HttpAdapter = new HttpAdapter()
+
   chatStream(
-    _id: string,
-    _question: string,
-    _onEvent: (event: SSEEvent) => void,
+    id: string,
+    question: string,
+    onEvent: (event: SSEEvent) => void,
     onError: (err: Error) => void,
-    _onDone: () => void
+    onDone: () => void
   ): AbortController {
-    const controller = new AbortController()
-    onError(new Error('Wails 适配器尚未实现，请使用浏览器模式'))
-    return controller
+    return this.http.chatStream(id, question, onEvent, onError, onDone)
   }
 }
