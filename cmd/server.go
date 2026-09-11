@@ -1,7 +1,4 @@
-// Package main 是应用入口，通过 fx 依赖注入组装所有模块并启动 HTTP 服务。
-// 模块注册顺序：config → logger → database → errs → server → user，
-// fx 自动解析依赖关系，无需手动排序。
-package main
+package cmd
 
 import (
 	"context"
@@ -11,17 +8,10 @@ import (
 	"general-agent/framework/http"
 	"general-agent/framework/scheduler"
 
-	_ "general-agent/docs" // swagger docs
-
 	"go.uber.org/fx"
 )
 
-// @title           General Agent
-// @version         1.0
-// @description     这是一个通用Agent智能体.
-// @host            localhost:8080
-// @BasePath        /api/v1/general-agent
-func main() {
+func CreateHttpServer() *fx.App {
 	App := fx.New(
 		// config.Module,
 		// logger.Module,
@@ -33,7 +23,7 @@ func main() {
 		fx.Invoke(start),
 		fx.Invoke(task),
 	)
-	App.Run()
+	return App
 }
 
 func start(lifecycle fx.Lifecycle, httpServer *http.HTTPServer) {

@@ -69,6 +69,7 @@ func NewGlobalConfig() (*Config, error) {
 	v.SetConfigName("config")
 	v.SetConfigType("yaml")
 	v.AddConfigPath("../etc")
+	v.AddConfigPath("etc")
 	if err := v.ReadInConfig(); err != nil {
 		return nil, fmt.Errorf("read config.yaml: %w", err)
 	}

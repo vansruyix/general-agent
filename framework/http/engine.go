@@ -26,7 +26,7 @@ type RuntimeOptions struct {
 }
 
 // DefaultRuntimeOptions 预设的运行时配置
-func DefaultRuntimeOptions(conf *config.Config, log *zap.Logger) *RuntimeOptions {
+func DefaultRuntimeOptions(conf *config.Config, log *zap.Logger, sr *middleware.StaticResource) *RuntimeOptions {
 	rOpts := &RuntimeOptions{
 
 		GlobalMiddlewares: []gin.HandlerFunc{
@@ -35,6 +35,7 @@ func DefaultRuntimeOptions(conf *config.Config, log *zap.Logger) *RuntimeOptions
 			middleware.HeaderSet(),
 			middleware.Logger(log, middleware.SkipWithPathPrefix("/healthz")),
 			middleware.LogError(log),
+			middleware.StaticResourceInit(sr),
 		},
 		Render: func(ctx *gin.Context, data interface{}, err error) {
 			if data == nil {
@@ -61,8 +62,8 @@ type Engine struct {
 	render func(ctx *gin.Context, data interface{}, err error)
 }
 
-func NewDefaultEngine(conf *config.Config, log *zap.Logger) *Engine {
-	runtimeOptions := DefaultRuntimeOptions(conf, log)
+func NewDefaultEngine(conf *config.Config, log *zap.Logger, sr *middleware.StaticResource) *Engine {
+	runtimeOptions := DefaultRuntimeOptions(conf, log, sr)
 	return NewEngine(conf, runtimeOptions)
 }
 

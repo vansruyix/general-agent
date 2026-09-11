@@ -12,3 +12,7 @@ bin/
 
 .superpowers
 .claude
+
+frontend/node_modules
+.playwright-mcp
+.vite
