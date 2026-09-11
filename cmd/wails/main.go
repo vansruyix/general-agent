@@ -33,9 +33,10 @@ func main() {
 
 	// fx 组装所有业务模块 + 静态文件服务
 	fxApp := cmd.CreateHttpServer()
+	go fxApp.Run()
 
 	// 等待 HTTP 服务就绪（用 localhost 检测，因为 0.0.0.0 不能被 connect）
-	if !waitForServer(fmt.Sprintf("localhost:%d", cfg.HTTP.Port), 5*time.Second) {
+	if !waitForServer(fmt.Sprintf("127.0.0.1:%d", cfg.HTTP.Port), 5*time.Second) {
 		logger.Fatal("HTTP 服务启动超时", zap.String("addr", addr))
 	}
 
@@ -55,13 +56,13 @@ func main() {
 	window.Show()
 
 	wailsApp.OnShutdown(func() {
-		_ = fxApp.Stop(context.Background())
+		go fxApp.Stop(context.Background())
 	})
 
 	if err := wailsApp.Run(); err != nil {
 		logger.Fatal("应用启动失败", zap.Error(err))
 	}
-	_ = fxApp.Stop(context.Background())
+	fxApp.Stop(context.Background())
 }
 
 // registerStaticFiles 为 Gin 引擎注册前端静态文件服务和 SPA fallback。

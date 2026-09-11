@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Cold metallic blue AI agent icon">
+  <defs>
+    <linearGradient id="bg" x1="72" y1="42" x2="446" y2="476" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7c9bb5"></stop>
+      <stop offset="0.20" stop-color="#5f7f98"></stop>
+      <stop offset="0.40" stop-color="#436077"></stop>
+      <stop offset="0.60" stop-color="#2b445b"></stop>
+      <stop offset="0.80" stop-color="#1a3044"></stop>
+      <stop offset="1" stop-color="#0c1a27"></stop>
+    </linearGradient>
+
+    <linearGradient id="face" x1="256" y1="140" x2="256" y2="350" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff"></stop>
+      <stop offset="1" stop-color="#dceaf7"></stop>
+    </linearGradient>
+
+    <linearGradient id="sheen" x1="80" y1="80" x2="380" y2="420" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.10"></stop>
+      <stop offset="0.5" stop-color="#ffffff" stop-opacity="0.04"></stop>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"></stop>
+    </linearGradient>
+
+    <radialGradient id="glow" cx="0.30" cy="0.22" r="0.85">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.09"></stop>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"></stop>
+    </radialGradient>
+
+    <radialGradient id="orb" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.95"></stop>
+      <stop offset="0.28" stop-color="#7dd3fc" stop-opacity="0.75"></stop>
+      <stop offset="1" stop-color="#7dd3fc" stop-opacity="0"></stop>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" rx="112" fill="url(#bg)"></rect>
+  <rect width="512" height="512" rx="112" fill="url(#sheen)"></rect>
+  <rect width="512" height="512" rx="112" fill="url(#glow)"></rect>
+
+  <!-- Tech connection lines -->
+  <g stroke="#e2f4ff" stroke-width="8" stroke-linecap="round" opacity="0.18">
+    <path d="M124 256H88"></path>
+    <path d="M388 256h36"></path>
+  </g>
+  <circle cx="88" cy="256" r="7" fill="#e2f4ff" opacity="0.24"></circle>
+  <circle cx="424" cy="256" r="7" fill="#e2f4ff" opacity="0.24"></circle>
+
+  <!-- Agent head -->
+  <rect x="152" y="168" width="208" height="168" rx="82" fill="url(#face)"></rect>
+  <rect x="124" y="224" width="28" height="84" rx="14" fill="#ffffff" opacity="0.95"></rect>
+  <rect x="360" y="224" width="28" height="84" rx="14" fill="#ffffff" opacity="0.95"></rect>
+
+  <!-- Antenna -->
+  <path d="M256 168v-30" stroke="#ffffff" stroke-width="14" stroke-linecap="round"></path>
+  <circle cx="256" cy="112" r="58" fill="url(#orb)"></circle>
+  <circle cx="256" cy="112" r="24" fill="#38bdf8"></circle>
+  <circle cx="256" cy="112" r="10" fill="#ffffff"></circle>
+
+  <!-- Face -->
+  <circle cx="222" cy="236" r="17" fill="#0b1729"></circle>
+  <circle cx="290" cy="236" r="17" fill="#0b1729"></circle>
+  <path d="M228 276c16 14 40 14 56 0" stroke="#0b1729" stroke-width="11" stroke-linecap="round" fill="none"></path>
+</svg>

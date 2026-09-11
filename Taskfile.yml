@@ -15,6 +15,31 @@ tasks:
   post-build:
     summary: 构建后处理
 
+  generate-icons:
+    summary: 从 SVG 生成应用图标
+    dir: build
+    platforms:
+      - windows
+    sources:
+      - ../frontend/public/favicon.svg
+    generates:
+      - appicon.png
+      - appicon.ico
+    cmds:
+      - powershell -ExecutionPolicy Bypass -File generate-icon.ps1
+
+  generate:syso:
+    summary: 生成 Windows .syso 资源文件（嵌入图标到 exe）
+    dir: build
+    platforms:
+      - windows
+    deps:
+      - generate-icons
+    cmds:
+      - wails3 generate syso -arch {{.ARCH}} -icon appicon.ico -manifest wails.exe.manifest -info info.json
+    vars:
+      ARCH: '{{.ARCH | default "amd64"}}'
+
   install-frontend-deps:
     summary: 安装前端依赖
     dir: frontend
@@ -99,3 +124,17 @@ tasks:
     summary: 清理构建产物
     cmds:
       - '{{if eq OS "windows"}}powershell -Command "Remove-Item -Recurse -Force -ErrorAction SilentlyContinue bin/"{{else}}rm -rf bin/{{end}}'
+
+  package:windows:
+    summary: 打包 Windows 桌面应用（含图标）
+    platforms:
+      - windows
+    deps:
+      - build-frontend
+    cmds:
+      - task: generate:syso
+        vars:
+          ARCH: amd64
+      - go build -tags production -ldflags="-w -s -H windowsgui" -o {{.BINARY_DIR}}/{{.APP_NAME}} ./cmd/wails/
+      - cmd: powershell -Command "Remove-Item build/*.syso -ErrorAction SilentlyContinue"
+      - echo '打包完成: {{.BINARY_DIR}}\{{.APP_NAME}}'
